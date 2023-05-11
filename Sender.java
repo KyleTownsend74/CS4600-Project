@@ -1,8 +1,22 @@
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.security.KeyFactory;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.spec.EncodedKeySpec;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.X509EncodedKeySpec;
 import java.util.Arrays;
 import java.util.Base64;
 
@@ -70,21 +84,57 @@ public class Sender {
     public static void main(String[] args) {
         String plaintext = "";
 
+        // try {
+        //     plaintext = new String(Files.readAllBytes(Paths.get("input.txt")), "UTF-8");
+        // } catch (Exception e) {
+        //     System.out.println("An error occurred.");
+        //     e.printStackTrace();
+        // }
+
+        // final String secretKey = "ssshhhhhhhhhhh!!!!";
+        // final String iv = "1234567890123456";
+
+        // String encryptedString = encrypt(plaintext, secretKey, iv) ;
+        // String decryptedString = decrypt(encryptedString, secretKey, iv) ;
+
+        // System.out.println(plaintext);
+        // System.out.println(encryptedString);
+        // System.out.println(decryptedString);
+
         try {
-            plaintext = new String(Files.readAllBytes(Paths.get("input.txt")), "UTF-8");
-        } catch (Exception e) {
-            System.out.println("An error occurred.");
-            e.printStackTrace();
+            // Generate keys
+            KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");
+            generator.initialize(2048);
+            KeyPair pair = generator.generateKeyPair();
+    
+            PrivateKey privateKey = pair.getPrivate();
+            PublicKey publicKey = pair.getPublic();
+
+            // Write key to file
+            FileOutputStream fos = new FileOutputStream("public.key");
+            System.out.println(publicKey);
+            fos.write(publicKey.getEncoded());
+            fos.close();
+
+            // Read key from file and create key instance
+            File publicKeyFile = new File("public.key");
+            byte[] publicKeyBytes = Files.readAllBytes(publicKeyFile.toPath());
+            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+            EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(publicKeyBytes);
+            PublicKey newPublicKey = keyFactory.generatePublic(publicKeySpec);
+            System.out.println(newPublicKey);
+        } catch(NoSuchAlgorithmException | IOException | InvalidKeySpecException e) {
+            System.out.println("Error while generating RSA Keys: " + e.toString());
         }
 
-        final String secretKey = "ssshhhhhhhhhhh!!!!";
-        final String iv = "1234567890123456";
-
-        String encryptedString = encrypt(plaintext, secretKey, iv) ;
-        String decryptedString = decrypt(encryptedString, secretKey, iv) ;
-
-        System.out.println(plaintext);
-        System.out.println(encryptedString);
-        System.out.println(decryptedString);
+        // try {
+        //     String str = "Hello world!\nSome other line!";
+        //     BufferedWriter writer = new BufferedWriter(new FileWriter("output.txt"));
+        //     writer.write(str);
+            
+        //     writer.close();
+        // } catch(Exception e) {
+        //     e.printStackTrace();
+        // }
     }
 }
