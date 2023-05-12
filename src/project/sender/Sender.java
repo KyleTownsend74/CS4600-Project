@@ -1,3 +1,5 @@
+package project.sender;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -23,6 +25,8 @@ import java.util.Base64;
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+
+import project.security.RSA;
 
 public class Sender {
 
@@ -102,30 +106,56 @@ public class Sender {
         // System.out.println(decryptedString);
 
         try {
-            // Generate keys
-            KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");
-            generator.initialize(2048);
-            KeyPair pair = generator.generateKeyPair();
-    
-            PrivateKey privateKey = pair.getPrivate();
-            PublicKey publicKey = pair.getPublic();
-
-            // Write key to file
-            FileOutputStream fos = new FileOutputStream("public.key");
-            System.out.println(publicKey);
-            fos.write(publicKey.getEncoded());
-            fos.close();
-
-            // Read key from file and create key instance
-            File publicKeyFile = new File("public.key");
-            byte[] publicKeyBytes = Files.readAllBytes(publicKeyFile.toPath());
-            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-            EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(publicKeyBytes);
-            PublicKey newPublicKey = keyFactory.generatePublic(publicKeySpec);
-            System.out.println(newPublicKey);
-        } catch(NoSuchAlgorithmException | IOException | InvalidKeySpecException e) {
-            System.out.println("Error while generating RSA Keys: " + e.toString());
+            String publicKeyPath = "receiver/sender_public.key";
+            String privateKeyPath = "sender/sender_private.key";
+            RSA.writeKeyPair(publicKeyPath, privateKeyPath);   
+        } catch (NoSuchAlgorithmException | IOException e) {
+            System.out.println("Error writing RSA key pair: " + e.toString());
         }
+        
+        // try {
+        //     // Write key to file
+        //     FileOutputStream publicFos = new FileOutputStream("test.txt");
+        //     // System.out.println(publicKey);
+        //     byte[] bytes = {66, 72, 89};
+        //     publicFos.write(bytes);
+        //     publicFos.close();
+        //     System.out.println("Hello???");
+        // } catch(IOException e) {
+        //     e.printStackTrace();
+        // }
+
+        // try {
+        //     // Generate keys
+        //     KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");
+        //     generator.initialize(2048);
+        //     KeyPair pair = generator.generateKeyPair();
+    
+        //     PrivateKey privateKey = pair.getPrivate();
+        //     PublicKey publicKey = pair.getPublic();
+
+        //     // Write key to file
+        //     FileOutputStream publicFos = new FileOutputStream("../receiver/sender_public.key");
+        //     // System.out.println(publicKey);
+        //     publicFos.write(publicKey.getEncoded());
+        //     publicFos.close();
+
+        //     // Write key to file
+        //     FileOutputStream privateFos = new FileOutputStream("sender_private.key");
+        //     // System.out.println(privateKey);
+        //     privateFos.write(privateKey.getEncoded());
+        //     privateFos.close();
+
+        //     // Read key from file and create key instance
+        //     File publicKeyFile = new File("../receiver/sender_public.key");
+        //     byte[] publicKeyBytes = Files.readAllBytes(publicKeyFile.toPath());
+        //     KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+        //     EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(publicKeyBytes);
+        //     PublicKey newPublicKey = keyFactory.generatePublic(publicKeySpec);
+        //     System.out.println(newPublicKey);
+        // } catch(NoSuchAlgorithmException | IOException | InvalidKeySpecException e) {
+        //     System.out.println("Error while generating RSA Keys: " + e.toString());
+        // }
 
         // try {
         //     String str = "Hello world!\nSome other line!";
