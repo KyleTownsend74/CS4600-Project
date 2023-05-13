@@ -12,20 +12,30 @@ import project.security.RSA;
 
 public class Sender {
 
-    public static void main(String[] args) {
+    public void generateSenderKeys() {
         try {
-            byte[] result1 = MAC.computeMac("Hello world!");
-            System.out.println("Mac result:");
-            System.out.println(new String(result1));
-
-            byte[] result2 = MAC.computeMac("Hello world!");
-            System.out.println("Mac result:");
-            System.out.println(new String(result2));
-
-            System.out.println(Arrays.equals(result1, result2));
-        } catch(Exception e) {
-            System.out.println("Error computing MAC: " + e.toString());
+            String publicKeyPath = "receiver/sender_public.key";
+            String privateKeyPath = "sender/sender_private.key";
+            RSA.writeKeyPair(publicKeyPath, privateKeyPath);   
+        } catch (NoSuchAlgorithmException | IOException e) {
+            System.out.println("Error writing RSA key pair: " + e.toString());
         }
+    }
+
+    public static void main(String[] args) {
+        // try {
+        //     byte[] result1 = MAC.computeMac("Hello world!");
+        //     System.out.println("Mac result:");
+        //     System.out.println(new String(result1));
+
+        //     byte[] result2 = MAC.computeMac("Hello world!");
+        //     System.out.println("Mac result:");
+        //     System.out.println(new String(result2));
+
+        //     System.out.println(Arrays.equals(result1, result2));
+        // } catch(Exception e) {
+        //     System.out.println("Error computing MAC: " + e.toString());
+        // }
 
         // String plaintext = "";
 
