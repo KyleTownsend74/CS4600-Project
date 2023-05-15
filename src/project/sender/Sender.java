@@ -1,6 +1,7 @@
 package project.sender;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.NoSuchAlgorithmException;
@@ -20,6 +21,10 @@ public class Sender {
         } catch (NoSuchAlgorithmException | IOException e) {
             System.out.println("Error writing RSA key pair: " + e.toString());
         }
+    }
+
+    public String getMessage() throws UnsupportedEncodingException, IOException {
+        return new String(Files.readAllBytes(Paths.get("sender/Message.txt")), "UTF-8");
     }
 
     public static void main(String[] args) {
