@@ -3,17 +3,23 @@ package project;
 import java.io.IOException;
 
 import project.receiver.Receiver;
+import project.security.AES;
 import project.sender.Sender;
 
 public class Simulation {
     
     public static void main(String[] args) {
+        // Create instances for the two communicating parties
         Sender sender = new Sender();
         Receiver receiver = new Receiver();
 
+        // Generate each party's RSA key pairs, and store them in the correct folders
+        // Assumes sender has access to "sender" folder, and receiver has access to 
+        // "receiver" folder in project's root directory
         sender.generateSenderKeys();
         receiver.generateReceiverKeys();
 
+        // Get the plaintext message from the sender (located in the "sender" folder)
         String msg = "";
         try {
             msg = sender.getMessage();
@@ -21,6 +27,18 @@ public class Simulation {
             System.out.println("Error reading sender's plaintext message: " + e.toString());
             return;
         }
-        System.out.println(msg);
+        // System.out.println(msg);
+
+        // Encrypt the sender's message using AES
+        String secretKey = "ssshhhhhhhhhhh!!!!";
+        String iv = "1234567890123456";
+        String encryptedMsg;
+
+        try {
+            encryptedMsg = AES.encrypt(msg, secretKey, iv);
+        } catch(Exception e) {
+            System.out.println("Error encrypting with AES: " + e.toString());
+            return;
+        }
     }
 }

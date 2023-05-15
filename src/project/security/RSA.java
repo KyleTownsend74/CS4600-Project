@@ -40,9 +40,6 @@ public class RSA {
         PrivateKey privateKey = pair.getPrivate();
         PublicKey publicKey = pair.getPublic();
 
-        System.out.println(privateKey);
-        System.out.println(publicKey);
-
         writeKey(publicKey, publicKeyPath);
         writeKey(privateKey, privateKeyPath);
     }
