@@ -7,13 +7,9 @@ import project.security.RSA;
 
 public class Receiver {
     
-    public void generateReceiverKeys() {
-        try {
-            String publicKeyPath = "sender/receiver_public.key";
-            String privateKeyPath = "receiver/receiver_private.key";
-            RSA.writeKeyPair(publicKeyPath, privateKeyPath);   
-        } catch (NoSuchAlgorithmException | IOException e) {
-            System.out.println("Error writing RSA key pair: " + e.toString());
-        }
+    public void generateReceiverKeys() throws NoSuchAlgorithmException, IOException {
+        String publicKeyPath = "sender/receiver_public.key";
+        String privateKeyPath = "receiver/receiver_private.key";
+        RSA.writeKeyPair(publicKeyPath, privateKeyPath);
     }
 }

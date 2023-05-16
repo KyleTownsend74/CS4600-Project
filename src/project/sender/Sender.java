@@ -13,14 +13,10 @@ import project.security.RSA;
 
 public class Sender {
 
-    public void generateSenderKeys() {
-        try {
-            String publicKeyPath = "receiver/sender_public.key";
-            String privateKeyPath = "sender/sender_private.key";
-            RSA.writeKeyPair(publicKeyPath, privateKeyPath);   
-        } catch (NoSuchAlgorithmException | IOException e) {
-            System.out.println("Error writing RSA key pair: " + e.toString());
-        }
+    public void generateSenderKeys() throws NoSuchAlgorithmException, IOException {        
+        String publicKeyPath = "receiver/sender_public.key";
+        String privateKeyPath = "sender/sender_private.key";
+        RSA.writeKeyPair(publicKeyPath, privateKeyPath);   
     }
 
     public String getMessage() throws UnsupportedEncodingException, IOException {

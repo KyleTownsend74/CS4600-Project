@@ -3,7 +3,9 @@ package project.security;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
+import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.KeyFactory;
 import java.security.KeyPair;
@@ -13,7 +15,14 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.spec.EncodedKeySpec;
 import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.Base64;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 public class RSA {
     
@@ -44,15 +53,54 @@ public class RSA {
         writeKey(privateKey, privateKeyPath);
     }
 
-    public static PublicKey readKey(String pathToKey) throws 
-            IOException, NoSuchAlgorithmException, InvalidKeySpecException {
+    private static EncodedKeySpec readKey(String pathToKey) throws IOException {
         // Read key from file and create key instance
-        File publicKeyFile = new File(pathToKey);
-        byte[] publicKeyBytes = Files.readAllBytes(publicKeyFile.toPath());
+        File keyFile = new File(pathToKey);
+        byte[] keyBytes = Files.readAllBytes(keyFile.toPath());
+
+        return new X509EncodedKeySpec(keyBytes);
+    }
+
+    public static PublicKey readPublicKey(String pathToKey) throws 
+            IOException, NoSuchAlgorithmException, InvalidKeySpecException {
+        EncodedKeySpec publicKeySpec = readKey(pathToKey);
         KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-        EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(publicKeyBytes);
-        PublicKey newPublicKey = keyFactory.generatePublic(publicKeySpec);
-        
-        return newPublicKey;
+
+        return keyFactory.generatePublic(publicKeySpec);
+    }
+
+    public static PrivateKey readPrivateKey(String pathToKey) throws
+            IOException, NoSuchAlgorithmException, InvalidKeySpecException {
+        File keyFile = new File(pathToKey);
+        byte[] keyBytes = Files.readAllBytes(keyFile.toPath());
+        PKCS8EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(keyBytes);
+        // EncodedKeySpec privateKeySpec = readKey(pathToKey);
+        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+
+        return keyFactory.generatePrivate(privateKeySpec);
+    }
+
+    public static String encrypt(String strToEncrypt, PublicKey publicKey) throws 
+            NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException,
+            IllegalBlockSizeException, BadPaddingException, UnsupportedEncodingException {
+        Cipher cipher = Cipher.getInstance("RSA");
+        cipher.init(Cipher.ENCRYPT_MODE, publicKey);
+
+        return Base64.getEncoder()
+            .encodeToString(cipher.doFinal(strToEncrypt.getBytes("UTF-8")));
+    }
+
+    public static String decrypt(String strToDecrypt, PrivateKey privateKey) throws
+            NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException,
+            IllegalBlockSizeException, BadPaddingException {
+        Cipher cipher = Cipher.getInstance("RSA");
+        cipher.init(Cipher.DECRYPT_MODE, privateKey);
+        // byte[] decryptedMessageBytes = cipher.doFinal(encryptedMessageBytes);
+        // String decryptedMessage = new String(decryptedMessageBytes, StandardCharsets.UTF_8);
+
+        return new String(cipher.doFinal(Base64.getDecoder()
+            .decode(strToDecrypt)));
+
+        // return null;
     }
 }
