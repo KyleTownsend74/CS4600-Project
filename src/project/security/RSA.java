@@ -26,7 +26,7 @@ import javax.crypto.NoSuchPaddingException;
 
 public class RSA {
     
-    private static KeyPair generateKeyPair() throws NoSuchAlgorithmException {
+    public static KeyPair generateKeyPair() throws NoSuchAlgorithmException {
         // Generate keys
         KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");
         generator.initialize(2048);

@@ -1,6 +1,7 @@
 package project;
 
 import java.io.IOException;
+import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 
@@ -19,11 +20,22 @@ public class Simulation {
         // Generate each party's RSA key pairs, and store them in the correct folders
         // Assumes sender has access to "sender" folder, and receiver has access to 
         // "receiver" folder in project's root directory
+        PublicKey senderPublic;
+        PrivateKey senderPrivate;
+        PublicKey receiverPublic;
+        PrivateKey receiverPrivate;
         try {
-            sender.generateSenderKeys();
-            receiver.generateReceiverKeys();
+            // sender.generateSenderKeys();
+            // receiver.generateReceiverKeys();
+            KeyPair senderPair = RSA.generateKeyPair();
+            senderPublic = senderPair.getPublic();
+            senderPrivate = senderPair.getPrivate();
+            KeyPair receiverPair = RSA.generateKeyPair();
+            receiverPublic = receiverPair.getPublic();
+            receiverPrivate = receiverPair.getPrivate();
         } catch(Exception e) {
             System.out.println("Error writing RSA key pair: " + e.toString());
+            return;
         }
 
         // Get the plaintext message from the sender (located in the "sender" folder)
@@ -36,19 +48,22 @@ public class Simulation {
         }
         // System.out.println(msg);
 
-        PublicKey publicKey;
-        PrivateKey privateKey;
+        // PublicKey publicKey;
+        // PrivateKey privateKey;
 
         try {
-            publicKey = RSA.readPublicKey("sender/receiver_public.key");
-            String encryptedMsg = RSA.encrypt(msg, publicKey);
+            // publicKey = RSA.readPublicKey("sender/receiver_public.key");
+            // String encryptedMsg = RSA.encrypt(msg, publicKey);
 
             // privateKey = RSA.readPrivateKey("sender/receiver_public.key");
             // String decryptedMsg = RSA.decrypt(msg, privateKey);
 
+            String encryptedMsg = RSA.encrypt(msg, receiverPublic);
+            String decryptedMsg = RSA.decrypt(encryptedMsg, receiverPrivate);
+
             System.out.println(msg);
             System.out.println(encryptedMsg);
-            // System.out.println(decryptedMsg);
+            System.out.println(decryptedMsg);
         } catch(Exception e) {
             System.out.println("Error reading key: " + e.toString());
             return;
