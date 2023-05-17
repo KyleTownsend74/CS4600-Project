@@ -83,6 +83,14 @@ public class Simulation {
             return;
         }
 
+        // Append encrypted AES key to encrypted message
         String dataToSend = encryptedMsg + encryptedKey;
+
+        // Send data (with MAC appended in the called method)
+        try {
+            sender.sendMessage(dataToSend);
+        } catch(Exception e) {
+            System.out.println("Error sending data: " + e.toString());
+        }
     }
 }
