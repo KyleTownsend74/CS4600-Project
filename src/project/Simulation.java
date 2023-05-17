@@ -12,7 +12,7 @@ import project.sender.Sender;
 
 public class Simulation {
     
-    public static final String AES_IV = "1234567890123456";
+    // Constants to identify where the end of the message or key is in the transmitted data file
     public static final String END_MESSAGE = "---END MESSAGE---";
     public static final String END_KEY = "---END KEY---";
 
@@ -43,42 +43,16 @@ public class Simulation {
             return;
         }
 
-        // Encrypt the sender's message using AES
-        String aesKey = "ssshhhhhhhhhhh!!!!";
-        String aesIv = AES_IV;
-        String encryptedMsg;
-
+        // Send data (AES encryption, RSA encryption, and MAC handled inside called method)
         try {
-            encryptedMsg = AES.encrypt(msg, aesKey, aesIv);
-        } catch(Exception e) {
-            System.out.println("Error encrypting with AES: " + e.toString());
-            return;
-        }
-
-        // Encrypt the AES key with receiver's RSA public key
-        String encryptedKey;
-
-        try {
-            encryptedKey = RSA.encrypt(aesKey, sender.getReceiverPublic());
-        } catch(Exception e) {
-            System.out.println("Error reading key: " + e.toString());
-            return;
-        }
-
-        // Append encrypted AES key to encrypted message
-        String dataToSend = encryptedMsg + END_MESSAGE
-                            + encryptedKey + END_KEY;
-
-        // Send data (with MAC appended in the called method)
-        try {
-            sender.sendMessage(dataToSend);
+            sender.sendMessage(msg);
         } catch(Exception e) {
             System.out.println("Error sending data: " + e.toString());
             return;
         }
 
         try {
-            System.out.println(receiver.readTransmittedMessage(receiver.getReceiverPrivate()));
+            System.out.println(receiver.readTransmittedMessage());
             // receiver.readTransmittedMessage(receiverPrivate);
         } catch(Exception e) {
             System.out.println("Error receiving transmitted message: " + e.toString());

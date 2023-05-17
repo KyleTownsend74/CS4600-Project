@@ -19,6 +19,7 @@ import project.Simulation;
 import project.security.AES;
 import project.security.MAC;
 import project.security.RSA;
+import project.sender.Sender;
 
 public class Receiver {
     
@@ -47,7 +48,7 @@ public class Receiver {
         RSA.writeKeyPair(publicKeyPath, privateKeyPath);
     }
 
-    public String readTransmittedMessage(PrivateKey privateKey) throws
+    public String readTransmittedMessage() throws
             UnsupportedEncodingException, IOException, NoSuchAlgorithmException, 
             InvalidKeyException, NoSuchPaddingException, IllegalBlockSizeException,
             BadPaddingException, InvalidAlgorithmParameterException {
@@ -68,8 +69,8 @@ public class Receiver {
         }
 
         // MAC authentication successful, get AES key and decrypt message
-        String decryptedAesKey = RSA.decrypt(aesKey, privateKey);
-        String decryptedMsg = AES.decrypt(msg, decryptedAesKey, Simulation.AES_IV);
+        String decryptedAesKey = RSA.decrypt(aesKey, receiverPrivate);
+        String decryptedMsg = AES.decrypt(msg, decryptedAesKey, Sender.AES_IV);
 
         return decryptedMsg;
     }
