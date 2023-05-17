@@ -8,6 +8,7 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.util.Arrays;
 
 import javax.crypto.BadPaddingException;
@@ -21,35 +22,31 @@ import project.security.RSA;
 
 public class Receiver {
     
+    private PublicKey senderPublic = null;
+    private PrivateKey receiverPrivate = null;
+
+    public void setSenderPublic(PublicKey publicKey) {
+        senderPublic = publicKey;
+    }
+
+    public void setReceiverPrivate(PrivateKey privateKey) {
+        receiverPrivate = privateKey;
+    }
+
+    public PublicKey getSenderPublic() {
+        return senderPublic;
+    }
+
+    public PrivateKey getReceiverPrivate() {
+        return receiverPrivate;
+    }
+
     public void generateReceiverKeys() throws NoSuchAlgorithmException, IOException {
         String publicKeyPath = "sender/receiver_public.key";
         String privateKeyPath = "receiver/receiver_private.key";
         RSA.writeKeyPair(publicKeyPath, privateKeyPath);
     }
 
-    // public String readTransmittedMessage(byte[] origMac) throws UnsupportedEncodingException, IOException,
-    //         NoSuchAlgorithmException, InvalidKeyException {
-    //     String data = new String(Files.readAllBytes(Paths.get("receiver/Transmitted_Data.txt")), "UTF-8");
-    //     int msgEndIndex = data.indexOf(Simulation.END_MESSAGE);
-    //     String msg = data.substring(0, msgEndIndex);
-    //     int keyEndIndex = data.indexOf(Simulation.END_KEY);
-    //     String aesKey = data.substring(msgEndIndex + Simulation.END_MESSAGE.length(), keyEndIndex);
-    //     String receivedMac = data.substring(keyEndIndex + Simulation.END_KEY.length(), data.length());
-    //     byte[] mac = MAC.computeMac(data.substring(0, data.indexOf(receivedMac)));
-    //     byte[] receivedMacBytes = receivedMac.getBytes("UTF-8");
-
-    //     // if(receivedMac.equals(new String(mac))) {
-    //     //     System.out.println("True");
-    //     // }
-    //     // if(Arrays.equals(origMac, mac)) {
-    //     //     System.out.println("true");
-    //     // }
-    //     if(Arrays.equals(mac, receivedMacBytes)) {
-    //         System.out.println("true");
-    //     }
-
-    //     return aesKey;
-    // }
     public String readTransmittedMessage(PrivateKey privateKey) throws
             UnsupportedEncodingException, IOException, NoSuchAlgorithmException, 
             InvalidKeyException, NoSuchPaddingException, IllegalBlockSizeException,

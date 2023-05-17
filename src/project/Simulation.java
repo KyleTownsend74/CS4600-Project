@@ -21,24 +21,16 @@ public class Simulation {
         Sender sender = new Sender();
         Receiver receiver = new Receiver();
 
-        // Generate each party's RSA key pairs, and store them in the correct folders
-        // Assumes sender has access to "sender" folder, and receiver has access to 
-        // "receiver" folder in project's root directory
-        PublicKey senderPublic;
-        PrivateKey senderPrivate;
-        PublicKey receiverPublic;
-        PrivateKey receiverPrivate;
+        // Generate each party's RSA key pairs
         try {
-            // sender.generateSenderKeys();
-            // receiver.generateReceiverKeys();
             KeyPair senderPair = RSA.generateKeyPair();
-            senderPublic = senderPair.getPublic();
-            senderPrivate = senderPair.getPrivate();
+            receiver.setSenderPublic(senderPair.getPublic());
+            sender.setSenderPrivate(senderPair.getPrivate());
             KeyPair receiverPair = RSA.generateKeyPair();
-            receiverPublic = receiverPair.getPublic();
-            receiverPrivate = receiverPair.getPrivate();
+            sender.setReceiverPublic(receiverPair.getPublic());
+            receiver.setReceiverPrivate(receiverPair.getPrivate());
         } catch(Exception e) {
-            System.out.println("Error writing RSA key pair: " + e.toString());
+            System.out.println("Error generating RSA key pairs: " + e.toString());
             return;
         }
 
@@ -63,25 +55,11 @@ public class Simulation {
             return;
         }
 
-        // PublicKey publicKey;
-        // PrivateKey privateKey;
-
         // Encrypt the AES key with receiver's RSA public key
         String encryptedKey;
 
         try {
-            // publicKey = RSA.readPublicKey("sender/receiver_public.key");
-            // String encryptedMsg = RSA.encrypt(msg, publicKey);
-
-            // privateKey = RSA.readPrivateKey("sender/receiver_public.key");
-            // String decryptedMsg = RSA.decrypt(msg, privateKey);
-
-            encryptedKey = RSA.encrypt(aesKey, receiverPublic);
-            // String decryptedKey = RSA.decrypt(encryptedKey, receiverPrivate);
-
-            // System.out.println(aesKey);
-            // System.out.println(encryptedKey);
-            // System.out.println(decryptedKey);
+            encryptedKey = RSA.encrypt(aesKey, sender.getReceiverPublic());
         } catch(Exception e) {
             System.out.println("Error reading key: " + e.toString());
             return;
@@ -100,7 +78,7 @@ public class Simulation {
         }
 
         try {
-            System.out.println(receiver.readTransmittedMessage(receiverPrivate));
+            System.out.println(receiver.readTransmittedMessage(receiver.getReceiverPrivate()));
             // receiver.readTransmittedMessage(receiverPrivate);
         } catch(Exception e) {
             System.out.println("Error receiving transmitted message: " + e.toString());

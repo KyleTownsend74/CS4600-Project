@@ -38,7 +38,6 @@ public class RSA {
     private static void writeKey(Key keyToWrite, String path) throws IOException {
         // Write key to file
         FileOutputStream fos = new FileOutputStream(path);
-        // System.out.println(publicKey);
         fos.write(keyToWrite.getEncoded());
         fos.close();
     }
@@ -74,7 +73,6 @@ public class RSA {
         File keyFile = new File(pathToKey);
         byte[] keyBytes = Files.readAllBytes(keyFile.toPath());
         PKCS8EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(keyBytes);
-        // EncodedKeySpec privateKeySpec = readKey(pathToKey);
         KeyFactory keyFactory = KeyFactory.getInstance("RSA");
 
         return keyFactory.generatePrivate(privateKeySpec);
@@ -95,12 +93,8 @@ public class RSA {
             IllegalBlockSizeException, BadPaddingException {
         Cipher cipher = Cipher.getInstance("RSA");
         cipher.init(Cipher.DECRYPT_MODE, privateKey);
-        // byte[] decryptedMessageBytes = cipher.doFinal(encryptedMessageBytes);
-        // String decryptedMessage = new String(decryptedMessageBytes, StandardCharsets.UTF_8);
 
         return new String(cipher.doFinal(Base64.getDecoder()
             .decode(strToDecrypt)));
-
-        // return null;
     }
 }
