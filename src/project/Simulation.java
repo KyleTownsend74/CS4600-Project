@@ -12,6 +12,9 @@ import project.sender.Sender;
 
 public class Simulation {
     
+    public static final String END_MESSAGE = "---END MESSAGE---";
+    public static final String END_KEY = "---END KEY---";
+
     public static void main(String[] args) {
         // Create instances for the two communicating parties
         Sender sender = new Sender();
@@ -84,13 +87,22 @@ public class Simulation {
         }
 
         // Append encrypted AES key to encrypted message
-        String dataToSend = encryptedMsg + encryptedKey;
+        String dataToSend = encryptedMsg + END_MESSAGE
+                            + encryptedKey + END_KEY;
 
         // Send data (with MAC appended in the called method)
         try {
             sender.sendMessage(dataToSend);
         } catch(Exception e) {
             System.out.println("Error sending data: " + e.toString());
+            return;
+        }
+
+        try {
+            System.out.println(receiver.readTransmittedMessage());
+        } catch(Exception e) {
+            System.out.println("Error receiving transmitted message: " + e.toString());
+            return;
         }
     }
 }
