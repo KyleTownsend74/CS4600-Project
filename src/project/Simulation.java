@@ -18,7 +18,8 @@ public class Simulation {
         Sender sender = new Sender();
         Receiver receiver = new Receiver();
 
-        // Generate each party's RSA key pairs
+        // --- REQUIREMENT 1 ---
+        // Generate each party's RSA key pairs and give to each party accordingly
         try {
             KeyPair senderPair = RSA.generateKeyPair();
             receiver.setSenderPublic(senderPair.getPublic());
@@ -30,7 +31,9 @@ public class Simulation {
             System.out.println("Error generating RSA key pairs: " + e.toString());
             return;
         }
+        // --- END REQUIREMENT 1 ---
 
+        // --- REQUIREMENTS 2, 3, AND 4 ---
         // Get the plaintext message from the sender (located in the "sender" folder)
         String msg = "";
         try {
@@ -47,7 +50,9 @@ public class Simulation {
             System.out.println("Error sending data: " + e.toString());
             return;
         }
+        // --- END REQUIREMENTS 2, 3, AND 4 ---
 
+        // --- REQUIREMENT 5 ---
         // Read transmitted data (MAC verification, RSA decryption, and AES decryption handled
         // inside called method)
         try {
@@ -63,5 +68,6 @@ public class Simulation {
             System.out.println("Error receiving transmitted message: " + e.toString());
             return;
         }
+        // --- END REQUIREMENT 5 ---
     }
 }
