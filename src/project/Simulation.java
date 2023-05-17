@@ -2,11 +2,8 @@ package project;
 
 import java.io.IOException;
 import java.security.KeyPair;
-import java.security.PrivateKey;
-import java.security.PublicKey;
 
 import project.receiver.Receiver;
-import project.security.AES;
 import project.security.RSA;
 import project.sender.Sender;
 
@@ -51,9 +48,10 @@ public class Simulation {
             return;
         }
 
+        // Read transmitted data (MAC verification, RSA decryption, and AES decryption handled
+        // inside called method)
         try {
             System.out.println(receiver.readTransmittedMessage());
-            // receiver.readTransmittedMessage(receiverPrivate);
         } catch(Exception e) {
             System.out.println("Error receiving transmitted message: " + e.toString());
             return;

@@ -42,28 +42,32 @@ public class Receiver {
         return receiverPrivate;
     }
 
-    public void generateReceiverKeys() throws NoSuchAlgorithmException, IOException {
-        String publicKeyPath = "sender/receiver_public.key";
-        String privateKeyPath = "receiver/receiver_private.key";
-        RSA.writeKeyPair(publicKeyPath, privateKeyPath);
-    }
-
+    // Read the message that was sent by the sender
+    // (hardcoded file path at 'receiver/Transmitted_Data')
     public String readTransmittedMessage() throws
             UnsupportedEncodingException, IOException, NoSuchAlgorithmException, 
             InvalidKeyException, NoSuchPaddingException, IllegalBlockSizeException,
             BadPaddingException, InvalidAlgorithmParameterException {
+        // Read the transmitted file as bytes and convert to String to be parsed
         byte[] dataBytes = Files.readAllBytes(Paths.get("receiver/Transmitted_Data"));
         String data = new String(dataBytes, "UTF-8");
+
+        // Parse message part of data
         int msgEndIndex = data.indexOf(Simulation.END_MESSAGE);
         String msg = data.substring(0, msgEndIndex);
+
+        // Parse key part of data
         int keyEndIndex = data.indexOf(Simulation.END_KEY);
         String aesKey = data.substring(msgEndIndex + Simulation.END_MESSAGE.length(), keyEndIndex);
+
+        // Parse MAC part of data and recompute MAC
         String receivedMac = data.substring(keyEndIndex + Simulation.END_KEY.length(), data.length());
         byte[] mac = MAC.computeMac(data.substring(0, data.indexOf(receivedMac)));
         byte[] receivedMacBytes = Arrays.copyOfRange(dataBytes, 
             keyEndIndex + Simulation.END_KEY.length(), dataBytes.length);
 
-        // MAC authentication failed, return null to represent failure
+        // Compare received MAC to computed MAC.
+        // If MAC authentication failed, return null to represent failure
         if(!Arrays.equals(mac, receivedMacBytes)) {
             return null;
         }

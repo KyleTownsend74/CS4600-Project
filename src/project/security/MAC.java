@@ -12,6 +12,7 @@ public class MAC {
     
     private static Key key = getMacKey();
 
+    // Create and return a valid MAC key
     private static Key getMacKey() {
         try {
             KeyGenerator keyGen = KeyGenerator.getInstance("DES");
@@ -26,6 +27,7 @@ public class MAC {
         }
     }
 
+    // Compute MAC for a given string message, return as byte array
     public static byte[] computeMac(String msg) throws NoSuchAlgorithmException, InvalidKeyException {
         Mac mac = Mac.getInstance("HmacSHA256");
         mac.init(key);

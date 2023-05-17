@@ -1,8 +1,6 @@
 package project.sender;
 
-import java.io.BufferedWriter;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
@@ -25,6 +23,7 @@ import project.security.RSA;
 
 public class Sender {
 
+    // Constant IV to use for AES encryption
     public static final String AES_IV = "1234567890123456";
 
     private PublicKey receiverPublic = null;
@@ -46,22 +45,22 @@ public class Sender {
         return senderPrivate;
     }
 
-    public void generateSenderKeys() throws NoSuchAlgorithmException, IOException {        
-        String publicKeyPath = "receiver/sender_public.key";
-        String privateKeyPath = "sender/sender_private.key";
-        RSA.writeKeyPair(publicKeyPath, privateKeyPath);   
-    }
-
+    // Read sender's message from file (hardcoded file path at 'sender/Message.txt')
     public String getMessage() throws UnsupportedEncodingException, IOException {
         return new String(Files.readAllBytes(Paths.get("sender/Message.txt")), "UTF-8");
     }
 
+    // Write data to file from byte array (hardcoded file path at 'receiver/Transmitted_Data')
     public void writeMessage(byte[] msgBytes) throws IOException {
         FileOutputStream fos = new FileOutputStream("receiver/Transmitted_Data");
         fos.write(msgBytes);
         fos.close();
     }
 
+    // Send message to receiver (using file system to simulate sending process)
+    // The message is encrypted using AES. The AES key used is encrypted using RSA.
+    // The encrypted key is appended to the encrypted message, and then the MAC is
+    // calculated and appended to the data to be sent.
     public void sendMessage(String msg) throws
             UnsupportedEncodingException, NoSuchAlgorithmException, NoSuchPaddingException,
             InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException,

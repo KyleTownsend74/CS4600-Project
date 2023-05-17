@@ -20,10 +20,12 @@ public class AES {
     private static SecretKeySpec secretKey;
     private static IvParameterSpec ivSpec;
 
+    // Set initialization vector for current encryption/decryption
     private static void setIv(final String myIv) throws UnsupportedEncodingException {
         ivSpec = new IvParameterSpec(myIv.getBytes("UTF-8"));
     }
     
+    // Set key for current encryption/decryption
     private static void setKey(final String myKey) throws
             UnsupportedEncodingException, NoSuchAlgorithmException {
         MessageDigest sha = null;
@@ -36,6 +38,7 @@ public class AES {
         secretKey = new SecretKeySpec(key, "AES");
     }
 
+    // Encrypt a message using CBC mode of AES
     public static String encrypt(final String strToEncrypt, final String secret, final String iv) throws
             UnsupportedEncodingException, NoSuchAlgorithmException, NoSuchPaddingException,
             InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException,
@@ -49,6 +52,7 @@ public class AES {
             .encodeToString(cipher.doFinal(strToEncrypt.getBytes("UTF-8")));
     }
 
+    // Decrypt a message using CBC mode of AES
     public static String decrypt(final String strToDecrypt, final String secret, final String iv) throws
             UnsupportedEncodingException, NoSuchAlgorithmException, NoSuchPaddingException,
             InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException,
