@@ -77,7 +77,7 @@ public class Sender {
             InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException,
             BadPaddingException, IOException {
         // Encrypt the message using AES
-        String aesKey = "ssshhhhhhhhhhh!!!!";
+        String aesKey = "abcdefghABCDEFGH";
         String encryptedMsg = AES.encrypt(msg, aesKey, AES_IV);
 
         // Encrypt the AES key with receiver's RSA public key
