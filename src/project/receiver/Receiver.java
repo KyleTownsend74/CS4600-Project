@@ -25,6 +25,7 @@ public class Receiver {
     
     private PublicKey senderPublic = null;
     private PrivateKey receiverPrivate = null;
+    private String receivedMessage;
 
     public void setSenderPublic(PublicKey publicKey) {
         senderPublic = publicKey;
@@ -44,7 +45,8 @@ public class Receiver {
 
     // Read the message that was sent by the sender
     // (hardcoded file path at 'receiver/Transmitted_Data')
-    public String readTransmittedMessage() throws
+    // Returns true on successful read, false otherwise
+    public boolean readTransmittedMessage() throws
             UnsupportedEncodingException, IOException, NoSuchAlgorithmException, 
             InvalidKeyException, NoSuchPaddingException, IllegalBlockSizeException,
             BadPaddingException, InvalidAlgorithmParameterException {
@@ -69,13 +71,25 @@ public class Receiver {
         // Compare received MAC to computed MAC.
         // If MAC authentication failed, return null to represent failure
         if(!Arrays.equals(mac, receivedMacBytes)) {
-            return null;
+            return false;
         }
 
         // MAC authentication successful, get AES key and decrypt message
         String decryptedAesKey = RSA.decrypt(aesKey, receiverPrivate);
         String decryptedMsg = AES.decrypt(msg, decryptedAesKey, Sender.AES_IV);
 
-        return decryptedMsg;
+        receivedMessage = decryptedMsg;
+        System.out.println("--- RECEIVER ---");
+        System.out.println("Verified and decrypted message...");
+        System.out.println("----------------\n");
+
+        return true;
+    }
+
+    public void displayReceivedMessage() {
+        System.out.println("--- RECEIVER ---");
+        System.out.println("Decrypted Message From Sender:\n");
+        System.out.println(receivedMessage);
+        System.out.println("\n----------------\n");
     }
 }

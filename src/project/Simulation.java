@@ -51,7 +51,14 @@ public class Simulation {
         // Read transmitted data (MAC verification, RSA decryption, and AES decryption handled
         // inside called method)
         try {
-            System.out.println(receiver.readTransmittedMessage());
+            if(receiver.readTransmittedMessage()) {
+                // The transmitted data was successfully retrieved by the receiver, so display
+                // the decrypted message
+                receiver.displayReceivedMessage();
+            }
+            else {
+                throw new Exception("Receiver method to read transmitted data returned false");
+            }
         } catch(Exception e) {
             System.out.println("Error receiving transmitted message: " + e.toString());
             return;

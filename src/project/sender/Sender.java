@@ -47,7 +47,14 @@ public class Sender {
 
     // Read sender's message from file (hardcoded file path at 'sender/Message.txt')
     public String getMessage() throws UnsupportedEncodingException, IOException {
-        return new String(Files.readAllBytes(Paths.get("sender/Message.txt")), "UTF-8");
+        String msg = new String(Files.readAllBytes(Paths.get("sender/Message.txt")), "UTF-8");
+        
+        System.out.println("--- SENDER ---");
+        System.out.println("Original Plaintext Message:\n");
+        System.out.println(msg);
+        System.out.println("\n--------------\n");
+
+        return msg;
     }
 
     // Write data to file from byte array (hardcoded file path at 'receiver/Transmitted_Data')
@@ -55,6 +62,10 @@ public class Sender {
         FileOutputStream fos = new FileOutputStream("receiver/Transmitted_Data");
         fos.write(msgBytes);
         fos.close();
+
+        System.out.println("--- SENDER ---");
+        System.out.println("Sent encrypted message...");
+        System.out.println("--------------\n");
     }
 
     // Send message to receiver (using file system to simulate sending process)
