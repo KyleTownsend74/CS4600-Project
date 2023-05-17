@@ -4,9 +4,19 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.util.Arrays;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 import project.Simulation;
+import project.security.AES;
+import project.security.MAC;
 import project.security.RSA;
 
 public class Receiver {
@@ -17,13 +27,53 @@ public class Receiver {
         RSA.writeKeyPair(publicKeyPath, privateKeyPath);
     }
 
-    public String readTransmittedMessage() throws UnsupportedEncodingException, IOException {
-        String data = new String(Files.readAllBytes(Paths.get("receiver/Transmitted_Data.txt")), "UTF-8");
+    // public String readTransmittedMessage(byte[] origMac) throws UnsupportedEncodingException, IOException,
+    //         NoSuchAlgorithmException, InvalidKeyException {
+    //     String data = new String(Files.readAllBytes(Paths.get("receiver/Transmitted_Data.txt")), "UTF-8");
+    //     int msgEndIndex = data.indexOf(Simulation.END_MESSAGE);
+    //     String msg = data.substring(0, msgEndIndex);
+    //     int keyEndIndex = data.indexOf(Simulation.END_KEY);
+    //     String aesKey = data.substring(msgEndIndex + Simulation.END_MESSAGE.length(), keyEndIndex);
+    //     String receivedMac = data.substring(keyEndIndex + Simulation.END_KEY.length(), data.length());
+    //     byte[] mac = MAC.computeMac(data.substring(0, data.indexOf(receivedMac)));
+    //     byte[] receivedMacBytes = receivedMac.getBytes("UTF-8");
+
+    //     // if(receivedMac.equals(new String(mac))) {
+    //     //     System.out.println("True");
+    //     // }
+    //     // if(Arrays.equals(origMac, mac)) {
+    //     //     System.out.println("true");
+    //     // }
+    //     if(Arrays.equals(mac, receivedMacBytes)) {
+    //         System.out.println("true");
+    //     }
+
+    //     return aesKey;
+    // }
+    public String readTransmittedMessage(PrivateKey privateKey) throws
+            UnsupportedEncodingException, IOException, NoSuchAlgorithmException, 
+            InvalidKeyException, NoSuchPaddingException, IllegalBlockSizeException,
+            BadPaddingException, InvalidAlgorithmParameterException {
+        byte[] dataBytes = Files.readAllBytes(Paths.get("receiver/Transmitted_Data"));
+        String data = new String(dataBytes, "UTF-8");
         int msgEndIndex = data.indexOf(Simulation.END_MESSAGE);
         String msg = data.substring(0, msgEndIndex);
         int keyEndIndex = data.indexOf(Simulation.END_KEY);
         String aesKey = data.substring(msgEndIndex + Simulation.END_MESSAGE.length(), keyEndIndex);
+        String receivedMac = data.substring(keyEndIndex + Simulation.END_KEY.length(), data.length());
+        byte[] mac = MAC.computeMac(data.substring(0, data.indexOf(receivedMac)));
+        byte[] receivedMacBytes = Arrays.copyOfRange(dataBytes, 
+            keyEndIndex + Simulation.END_KEY.length(), dataBytes.length);
 
-        return aesKey;
+        // MAC authentication failed, return null to represent failure
+        if(!Arrays.equals(mac, receivedMacBytes)) {
+            return null;
+        }
+
+        // MAC authentication successful, get AES key and decrypt message
+        String decryptedAesKey = RSA.decrypt(aesKey, privateKey);
+        String decryptedMsg = AES.decrypt(msg, decryptedAesKey, Simulation.AES_IV);
+
+        return decryptedMsg;
     }
 }

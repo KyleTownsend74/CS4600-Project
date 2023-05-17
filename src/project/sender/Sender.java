@@ -1,6 +1,7 @@
 package project.sender;
 
 import java.io.BufferedWriter;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -26,12 +27,23 @@ public class Sender {
         return new String(Files.readAllBytes(Paths.get("sender/Message.txt")), "UTF-8");
     }
 
+    // public byte[] sendMessage(String msg) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
+    //     BufferedWriter writer = new BufferedWriter(new FileWriter("receiver/Transmitted_Data"));
+    //     byte[] mac = MAC.computeMac(msg);
+    //     msg += new String(mac);
+    //     writer.write(msg);
+    //     writer.close();
+    //     return mac;
+    // }
+
     public void sendMessage(String msg) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
-        BufferedWriter writer = new BufferedWriter(new FileWriter("receiver/Transmitted_Data.txt"));
+        FileOutputStream fos = new FileOutputStream("receiver/Transmitted_Data");
         byte[] mac = MAC.computeMac(msg);
-        msg += new String(mac);
-        writer.write(msg);
-        writer.close();
+        byte[] msgBytes = msg.getBytes("UTF-8");
+        byte[] both = Arrays.copyOf(msgBytes, msgBytes.length + mac.length);
+        System.arraycopy(mac, 0, both, msgBytes.length, mac.length);
+        fos.write(both);
+        fos.close();
     }
 
     public static void main(String[] args) {

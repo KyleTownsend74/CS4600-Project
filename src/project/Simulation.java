@@ -12,6 +12,7 @@ import project.sender.Sender;
 
 public class Simulation {
     
+    public static final String AES_IV = "1234567890123456";
     public static final String END_MESSAGE = "---END MESSAGE---";
     public static final String END_KEY = "---END KEY---";
 
@@ -52,7 +53,7 @@ public class Simulation {
 
         // Encrypt the sender's message using AES
         String aesKey = "ssshhhhhhhhhhh!!!!";
-        String aesIv = "1234567890123456";
+        String aesIv = AES_IV;
         String encryptedMsg;
 
         try {
@@ -99,7 +100,8 @@ public class Simulation {
         }
 
         try {
-            System.out.println(receiver.readTransmittedMessage());
+            System.out.println(receiver.readTransmittedMessage(receiverPrivate));
+            // receiver.readTransmittedMessage(receiverPrivate);
         } catch(Exception e) {
             System.out.println("Error receiving transmitted message: " + e.toString());
             return;
