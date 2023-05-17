@@ -46,10 +46,24 @@ public class Simulation {
             System.out.println("Error reading sender's plaintext message: " + e.toString());
             return;
         }
-        // System.out.println(msg);
+
+        // Encrypt the sender's message using AES
+        String aesKey = "ssshhhhhhhhhhh!!!!";
+        String aesIv = "1234567890123456";
+        String encryptedMsg;
+
+        try {
+            encryptedMsg = AES.encrypt(msg, aesKey, aesIv);
+        } catch(Exception e) {
+            System.out.println("Error encrypting with AES: " + e.toString());
+            return;
+        }
 
         // PublicKey publicKey;
         // PrivateKey privateKey;
+
+        // Encrypt the AES key with receiver's RSA public key
+        String encryptedKey;
 
         try {
             // publicKey = RSA.readPublicKey("sender/receiver_public.key");
@@ -58,27 +72,17 @@ public class Simulation {
             // privateKey = RSA.readPrivateKey("sender/receiver_public.key");
             // String decryptedMsg = RSA.decrypt(msg, privateKey);
 
-            String encryptedMsg = RSA.encrypt(msg, receiverPublic);
-            String decryptedMsg = RSA.decrypt(encryptedMsg, receiverPrivate);
+            encryptedKey = RSA.encrypt(aesKey, receiverPublic);
+            // String decryptedKey = RSA.decrypt(encryptedKey, receiverPrivate);
 
-            System.out.println(msg);
-            System.out.println(encryptedMsg);
-            System.out.println(decryptedMsg);
+            // System.out.println(aesKey);
+            // System.out.println(encryptedKey);
+            // System.out.println(decryptedKey);
         } catch(Exception e) {
             System.out.println("Error reading key: " + e.toString());
             return;
         }
 
-        // // Encrypt the sender's message using AES
-        // String secretKey = "ssshhhhhhhhhhh!!!!";
-        // String iv = "1234567890123456";
-        // String encryptedMsg;
-
-        // try {
-        //     encryptedMsg = AES.encrypt(msg, secretKey, iv);
-        // } catch(Exception e) {
-        //     System.out.println("Error encrypting with AES: " + e.toString());
-        //     return;
-        // }
+        String dataToSend = encryptedMsg + encryptedKey;
     }
 }
